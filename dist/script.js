@@ -1,17 +1,4 @@
 /**
- * The instance has these properties:
- * 
- * ## USAGE
- * 
-    function callback(value, moreInfo) {
-        console.log(value);
-    }
-
-    const td = new TypingDelayer({
-        elId: "myInput",
-        onTypingStopped: callback,
-        delayMs: 2000
-    });
  *
  */
 class TypingDelayer {

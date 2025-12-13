@@ -2,10 +2,80 @@
 
 A computation must run only when the user is done tipying? Problem solved.
 
+A callback will be called when the user will stop typing after the provided or default delay.
+
+This callback will contain the value of the input, which can be now used in your computation.
+
+The callback will therefore be called **only after** waiting the delay from the moment the user is done typing, not when the user is typing.
+
+## Installation
+
+### CDN
+
+```
+https://typing-delayer.giutav.workers.dev/script.js
+```
+
+
+### HTML
+
+
+```
+<script src="https://typing-delayer.giutav.workers.dev/script.js"></script
+```
+
+
 ## Usage
 
-Include in your HTML:
+All you have to do:
+
+- Provide the id of the input where the user types
+- Provide a callback that specifies what you do once you have the input value
+- (optional) Provide a delay in milliseconds which means "wait X delay before calling the callback"
+
+### Simplest case
+
+Simplest case with default delay (600 milliseconds).
+
+```js
+ 
+function callback(value, moreInfo) {
+    // <value> contains the input value after waiting the delay from when the user is done typing
+    runComputation(value)
+    // <moreInfo> is an object that can provide more info (for future implementations)
+
+}
+
+const typingDelayer = new TypingDelayer({
+    // the input id
+    elId: "myInput",
+    // reference to the callback
+    onTypingStopped: callback
+});
+
+```
 
 
-`<script src="https://typing-delayer.giutav.workers.dev/script.js"></script`
+### Provide delay
+
+```js
+ 
+function callback(value, moreInfo) {
+    // <value> contains the input value after waiting the delay from when the user is done typing
+    runComputation(value)
+    // <moreInfo> is an object that can provide more info (for future implementations)
+
+}
+
+const typingDelayer = new TypingDelayer({
+    // the input id
+    elId: "myInput",
+    // reference to the callback
+    onTypingStopped: callback,
+    // delay in milliseconds. in this case, waits for 2 seconds
+    delayMs: 2000
+});
+
+```
+
 
