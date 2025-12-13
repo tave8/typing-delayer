@@ -25,6 +25,28 @@ https://typing-delayer.giutav.workers.dev/script.js
 ```
 
 
+## API
+
+```
+instance = new TypingDelayer({
+    inputId: str
+    onTypingStopped: function
+    delayMs: integer
+})
+```
+
+```
+callback(value: str, moreInfo: obj) 
+```
+
+```
+moreInfo: {
+    event: keyboard event
+}
+```
+
+
+
 ## Usage
 
 All you have to do:
@@ -37,18 +59,22 @@ All you have to do:
 
 Simplest case with default delay (600 milliseconds).
 
+You can even ignore the returned class instance, if you don't need it, so it's less code.  
+
 ```js
  
 function callback(value, moreInfo) {
     // <value> contains the input value after waiting the delay from when the user is done typing
-    runComputation(value)
+    // runComputation(value)
+
     // <moreInfo> is an object that can provide more info (for future implementations)
 
 }
 
-const typingDelayer = new TypingDelayer({
+// ignore returned class instance
+new TypingDelayer({
     // the input id
-    elId: "myInput",
+    inputId: "myInput",
     // reference to the callback
     onTypingStopped: callback
 });
@@ -62,20 +88,20 @@ const typingDelayer = new TypingDelayer({
  
 function callback(value, moreInfo) {
     // <value> contains the input value after waiting the delay from when the user is done typing
-    runComputation(value)
+    // runComputation(value)
+
     // <moreInfo> is an object that can provide more info (for future implementations)
 
 }
 
 const typingDelayer = new TypingDelayer({
     // the input id
-    elId: "myInput",
+    inputId: "myInput",
     // reference to the callback
     onTypingStopped: callback,
-    // delay in milliseconds. in this case, waits for 2 seconds
+    // delay in milliseconds. in this case, waits for 2 seconds before firing callback
     delayMs: 2000
 });
 
 ```
-
 

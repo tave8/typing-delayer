@@ -1,59 +1,81 @@
 /**
+ * ## TypingDelayer
+ *
+ * Fire a custom callback upon waiting a delay from when the user stops typing.
+ * Ideal for computations that must wait when the user stops typing.
+ *
+ * @author Giuseppe Tavella
  *
  */
 class TypingDelayer {
-  constructor({ elId, onTypingStopped, delayMs = 600 }) {
+  constructor({ inputId, onTypingStopped, delayMs = 600 }) {
     // the instance of the class
-    var inst = this;
+    const self = this;
     // set instance properties
-    inst.onTypingStopped = onTypingStopped;
-    inst.delayMs = delayMs;
-    inst._timeout = null;
+    this.inputId = inputId;
+    this.onTypingStopped = onTypingStopped;
+    this.delayMs = delayMs;
+    this.lastTimeout = null;
 
     // start the core typing delay mechanism
-    function doThis() {
-      inst.elHtml = document.getElementById(elId);
-      inst._init();
+    function start() {
+      // check that the provided input id resolves to a real html node
+      const inputEl = document.getElementById(inputId);
+      const existsInput = inputEl instanceof HTMLElement;
+
+      if (!existsInput) {
+        throw Error(`Error in "TypingDelayer" library. ` + `The provided '${inputId}' input id resolves ` + `to a html node that does not exist.`);
+      }
+
+      // add event handler
+      inputEl.addEventListener("keyup", (event) => {
+        self.handleTyping.bind(self)(event);
+      });
     }
 
     // if the document was loaded
     if (document.readyState == "complete") {
-      doThis();
+      start();
     }
     // before the document is loaded
     else {
       window.addEventListener("load", () => {
-        doThis();
+        start();
       });
     }
   }
 
-  _init() {
-    var inst = this;
-    inst.elHtml.addEventListener("keyup", () => {
-      inst._whenTypes(inst);
-    });
-  }
-
-  _whenTypes(inst) {
+  handleTyping(event) {
     // every time the specified html element is being typed in,
     // clear the timeout of the last timeout, which means,
     // do not run the code that was in the last setTimeout function
-    clearTimeout(inst._timeout);
+    this.clearTimeout();
 
     // this code will be run in setTimeout
-    function runWhenFinishDelay() {
+    function runOnFinishDelay() {
       // get the value of that element, supposedly an input
-      const elVal = inst.elHtml.value;
-      const moreInfo = {};
+      const inputEl = document.getElementById(this.inputId);
+      const inputValue = inputEl.value;
+      const moreInfo = {
+        // the keyboard event object that was triggered by the user
+        event: event,
+      };
       // call the onTypingStopped callback, providing data,
       // including the value of the input
-      inst.onTypingStopped(elVal, moreInfo);
+      this.onTypingStopped(inputValue, moreInfo);
     }
 
-    const newTimeout = setTimeout(runWhenFinishDelay, inst.delayMs);
+    const newTimeout = setTimeout(runOnFinishDelay.bind(this), this.delayMs);
     // set the new timeout, which means, this code will be run next time
     // target html element will be typed in.
-    inst._timeout = newTimeout;
+    this.setTimeout(newTimeout);
+  }
+
+  clearTimeout() {
+    clearTimeout(this.lastTimeout);
+  }
+
+  setTimeout(newTimeout) {
+    this.lastTimeout = newTimeout;
   }
 }
