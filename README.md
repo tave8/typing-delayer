@@ -21,7 +21,7 @@ https://typing-delayer.giutav.workers.dev/script.js
 
 
 ```
-<script src="https://typing-delayer.giutav.workers.dev/script.js"></script
+<script src="https://typing-delayer.giutav.workers.dev/script.js"></script>
 ```
 
 
