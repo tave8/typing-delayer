@@ -27,7 +27,6 @@ class TypingDelayer {
       // check that the provided input id resolves to a real html node
       const inputEl = document.querySelector(inputSelector);
       const existsInput = inputEl instanceof HTMLElement;
-      console.log(inputSelector)
 
       if (!existsInput) {
         throw Error(`Error in "TypingDelayer" library. ` + `The provided '${inputSelector}' CSS selector, to select the input, resolves ` + `to a html node that does not exist.`);
