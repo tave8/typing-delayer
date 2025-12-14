@@ -29,7 +29,7 @@ https://typing-delayer.giutav.workers.dev/script.js
 
 ```
 instance = new TypingDelayer({
-    inputId: str
+    inputSelector: str of valid CSS selector
     onTypingStopped: function
     delayMs: integer
 })
@@ -51,7 +51,7 @@ moreInfo: {
 
 All you have to do:
 
-- Provide the id of the input where the user types
+- Provide the CSS selector the input where the user types. document.querySelector() will be used, so the first matching html node will be used
 - Provide a callback that specifies what you do once you have the input value
 - (optional) Provide a delay in milliseconds which means "wait X delay before calling the callback"
 
@@ -73,8 +73,8 @@ function callback(value, moreInfo) {
 
 // ignore returned class instance
 new TypingDelayer({
-    // the input id
-    inputId: "myInput",
+    // the input CSS selector
+    inputSelector: "#myInput",
     // reference to the callback
     onTypingStopped: callback
 });
@@ -95,8 +95,8 @@ function callback(value, moreInfo) {
 }
 
 const typingDelayer = new TypingDelayer({
-    // the input id
-    inputId: "myInput",
+    // the input CSS selector
+    inputSelector: "#myInput",
     // reference to the callback
     onTypingStopped: callback,
     // delay in milliseconds. in this case, waits for 2 seconds before firing callback

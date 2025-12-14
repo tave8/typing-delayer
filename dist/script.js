@@ -8,11 +8,16 @@
  *
  */
 class TypingDelayer {
-  constructor({ inputId, onTypingStopped, delayMs = 600 }) {
+  constructor({ inputSelector, onTypingStopped, delayMs = 600 }) {
+    // chech that all required params have been passed
+    if (!inputSelector || !onTypingStopped) {
+        throw Error(`Error in "TypingDelayer" library. ` + `You must provide all required parameters.`);
+    }
+
     // the instance of the class
     const self = this;
     // set instance properties
-    this.inputId = inputId;
+    this.inputSelector = inputSelector;
     this.onTypingStopped = onTypingStopped;
     this.delayMs = delayMs;
     this.lastTimeout = null;
@@ -20,11 +25,12 @@ class TypingDelayer {
     // start the core typing delay mechanism
     function start() {
       // check that the provided input id resolves to a real html node
-      const inputEl = document.getElementById(inputId);
+      const inputEl = document.querySelector(inputSelector);
       const existsInput = inputEl instanceof HTMLElement;
+      console.log(inputSelector)
 
       if (!existsInput) {
-        throw Error(`Error in "TypingDelayer" library. ` + `The provided '${inputId}' input id resolves ` + `to a html node that does not exist.`);
+        throw Error(`Error in "TypingDelayer" library. ` + `The provided '${inputSelector}' CSS selector, to select the input, resolves ` + `to a html node that does not exist.`);
       }
 
       // add event handler
@@ -54,7 +60,7 @@ class TypingDelayer {
     // this code will be run in setTimeout
     function runOnFinishDelay() {
       // get the value of that element, supposedly an input
-      const inputEl = document.getElementById(this.inputId);
+      const inputEl = document.querySelector(this.inputSelector);
       const inputValue = inputEl.value;
       const moreInfo = {
         // the keyboard event object that was triggered by the user

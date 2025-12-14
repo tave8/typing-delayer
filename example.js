@@ -9,8 +9,16 @@ function callback(value, moreInfo) {
 
 
 const typingDelayer = new TypingDelayer({
-    // the input id
-    inputId: "myInput",
+    // the input selector
+    inputSelector: "#myInput",
+    // reference to the callback
+    onTypingStopped: callback
+});
+
+
+const typingDelayer2 = new TypingDelayer({
+    // the input selector
+    inputSelector: ".container > .wrapper > input",
     // reference to the callback
     onTypingStopped: callback
 });
