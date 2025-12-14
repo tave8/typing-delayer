@@ -8,11 +8,13 @@
  *
  */
 class TypingDelayer {
-  constructor({ inputSelector, onTypingStopped, delayMs = 600 }) {
+  constructor({ inputSelector, onTypingStopped, delayMs = 600 }, config={}) {
     // chech that all required params have been passed
     if (!inputSelector || !onTypingStopped) {
-        throw Error(`Error in "TypingDelayer" library. ` + `You must provide all required parameters.`);
+      throw Error(`Error in "TypingDelayer" library. ` + `You must provide all required parameters.`);
     }
+
+    const { callerContext } = config;
 
     // the instance of the class
     const self = this;
@@ -21,6 +23,9 @@ class TypingDelayer {
     this.onTypingStopped = onTypingStopped;
     this.delayMs = delayMs;
     this.lastTimeout = null;
+    // the context of the caller. the user must specify which context
+    // "this" should point to. otherwise
+    this.callerContext = callerContext ? callerContext : this;
 
     // start the core typing delay mechanism
     function start() {
@@ -29,7 +34,11 @@ class TypingDelayer {
       const existsInput = inputEl instanceof HTMLElement;
 
       if (!existsInput) {
-        throw Error(`Error in "TypingDelayer" library. ` + `The provided '${inputSelector}' CSS selector, to select the input, resolves ` + `to a html node that does not exist.`);
+        throw Error(
+          `Error in "TypingDelayer" library. ` +
+            `The provided '${inputSelector}' CSS selector, to select the input, resolves ` +
+            `to a html node that does not exist.`
+        );
       }
 
       // add event handler
@@ -67,7 +76,18 @@ class TypingDelayer {
       };
       // call the onTypingStopped callback, providing data,
       // including the value of the input
-      this.onTypingStopped(inputValue, moreInfo);
+      // binding the callback context to the context it was provided,
+      // will make sure that the function reference passed as callback
+      // for "onTypingStopped" will make the "this" in the callback,
+      // correctly point to the context it was called from
+      // this means the callback for onTypingStopped will be able
+      // to access "this" as expected. for example, if the
+      // onTypingStopped callback is a class method, this means
+      // this class method will have the "this" correctly point to
+      // the class instance.
+      // this is not an extra feature, instead it's a mechanism
+      // to make what's expected, work as expected
+      this.onTypingStopped.bind(this.callerContext)(inputValue, moreInfo);
     }
 
     const newTimeout = setTimeout(runOnFinishDelay.bind(this), this.delayMs);
