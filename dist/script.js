@@ -16,8 +16,6 @@ class TypingDelayer {
 
     const { callerContext } = config;
 
-    // the instance of the class
-    const self = this;
     // set instance properties
     this.inputSelector = inputSelector;
     this.onTypingStopped = onTypingStopped;
