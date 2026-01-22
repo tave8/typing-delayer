@@ -1,5 +1,5 @@
 /**
- * ## TypingDelayer
+ * # TypingDelayer
  *
  * Fire a custom callback upon waiting a delay from when the user stops typing.
  * Ideal for computations that must wait when the user stops typing.
@@ -8,7 +8,7 @@
  *
  */
 class TypingDelayer {
-  constructor({ inputSelector, onTypingStopped, delayMs = 600 }, config={}) {
+  constructor({ inputSelector, onTypingStopped, delayMs = 600, minChars=0 }, config={}) {
     // chech that all required params have been passed
     if (!inputSelector || !onTypingStopped) {
       throw Error(`Error in "TypingDelayer" library. ` + `You must provide all required parameters.`);
@@ -22,6 +22,8 @@ class TypingDelayer {
     this.inputSelector = inputSelector;
     this.onTypingStopped = onTypingStopped;
     this.delayMs = delayMs;
+    // minimum number of chars to trigger callback
+    this.minChars = minChars
     this.lastTimeout = null;
     // the context of the caller. the user must specify which context
     // "this" should point to. otherwise
@@ -70,6 +72,13 @@ class TypingDelayer {
       // get the value of that element, supposedly an input
       const inputEl = document.querySelector(this.inputSelector);
       const inputValue = inputEl.value;
+
+      // if the number of chars are less than minimum number of chars,
+      // do not execute code/callback
+      if (inputValue.length < this.minChars) {
+        return
+      }
+      
       const moreInfo = {
         // the keyboard event object that was triggered by the user
         event: event,

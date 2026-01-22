@@ -12,7 +12,8 @@ const typingDelayer = new TypingDelayer({
     // the input selector
     inputSelector: "#myInput",
     // reference to the callback
-    onTypingStopped: callback
+    onTypingStopped: callback,
+    minChars: 3
 });
 
 
