@@ -8,7 +8,7 @@
  *
  */
 class TypingDelayer {
-  constructor({ inputSelector, onTypingStopped, delayMs = 600, minChars=0 }, config={}) {
+  constructor({ inputSelector, onTypingStopped, delayMs = 600, minChars = 0 }, config = {}) {
     // chech that all required params have been passed
     if (!inputSelector || !onTypingStopped) {
       throw Error(`Error in "TypingDelayer" library. ` + `You must provide all required parameters.`);
@@ -23,7 +23,7 @@ class TypingDelayer {
     this.onTypingStopped = onTypingStopped;
     this.delayMs = delayMs;
     // minimum number of chars to trigger callback
-    this.minChars = minChars
+    this.minChars = minChars;
     this.lastTimeout = null;
     // the context of the caller. the user must specify which context
     // "this" should point to. otherwise
@@ -39,7 +39,7 @@ class TypingDelayer {
         throw Error(
           `Error in "TypingDelayer" library. ` +
             `The provided '${inputSelector}' CSS selector, to select the input, resolves ` +
-            `to a html node that does not exist.`
+            `to a html node that does not exist.`,
         );
       }
 
@@ -61,27 +61,33 @@ class TypingDelayer {
     }
   }
 
-  handleTyping(event) {
+  handleTyping(inputEvent) {
     // every time the specified html element is being typed in,
     // clear the timeout of the last timeout, which means,
     // do not run the code that was in the last setTimeout function
     this.clearTimeout();
+    const newTimeout = setTimeout(this.runOnFinishDelay.bind(this)(inputEvent), this.delayMs);
+    // set the new timeout, which means, this code will be run next time
+    // target html element will be typed in.
+    this.setTimeout(newTimeout);
+  }
 
-    // this code will be run in setTimeout
-    function runOnFinishDelay() {
+  // this code will be run in setTimeout
+  runOnFinishDelay(inputEvent) {
+    return () => {
       // get the value of that element, supposedly an input
       const inputEl = document.querySelector(this.inputSelector);
       const inputValue = inputEl.value;
-
+  
       // if the number of chars are less than minimum number of chars,
       // do not execute code/callback
       if (inputValue.length < this.minChars) {
-        return
+        return;
       }
-      
+  
       const moreInfo = {
         // the keyboard event object that was triggered by the user
-        event: event,
+        event: inputEvent,
       };
       // call the onTypingStopped callback, providing data,
       // including the value of the input
@@ -96,13 +102,10 @@ class TypingDelayer {
       // the class instance.
       // this is not an extra feature, instead it's a mechanism
       // to make what's expected, work as expected
-      this.onTypingStopped.bind(this.callerContext)(inputValue, moreInfo);
+      const onTypingStopped = this.onTypingStopped.bind(this.callerContext)
+  
+      onTypingStopped(inputValue, moreInfo)
     }
-
-    const newTimeout = setTimeout(runOnFinishDelay.bind(this), this.delayMs);
-    // set the new timeout, which means, this code will be run next time
-    // target html element will be typed in.
-    this.setTimeout(newTimeout);
   }
 
   clearTimeout() {
