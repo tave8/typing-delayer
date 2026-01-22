@@ -29,36 +29,35 @@ class TypingDelayer {
     // "this" should point to. otherwise
     this.callerContext = callerContext ? callerContext : this;
 
-    // start the core typing delay mechanism
-    function start() {
-      // check that the provided input id resolves to a real html node
-      const inputEl = document.querySelector(inputSelector);
-      const existsInput = inputEl instanceof HTMLElement;
-
-      if (!existsInput) {
-        throw Error(
-          `Error in "TypingDelayer" library. ` +
-            `The provided '${inputSelector}' CSS selector, to select the input, resolves ` +
-            `to a html node that does not exist.`,
-        );
-      }
-
-      // add event handler
-      inputEl.addEventListener("keyup", (event) => {
-        self.handleTyping.bind(self)(event);
-      });
-    }
-
     // if the document was loaded
     if (document.readyState == "complete") {
-      start();
+      this.init();
     }
     // before the document is loaded
     else {
-      window.addEventListener("load", () => {
-        start();
-      });
+      window.addEventListener("load", this.init.bind(this));
     }
+  }
+
+  // start the core typing delay mechanism
+  init() {
+    const self = this
+    // check that the provided input id resolves to a real html node
+    const inputEl = document.querySelector(this.inputSelector);
+    const existsInput = inputEl instanceof HTMLElement;
+
+    if (!existsInput) {
+      throw Error(
+        `Error in "TypingDelayer" library. ` +
+          `The provided '${this.inputSelector}' CSS selector, to select the input, resolves ` +
+          `to a html node that does not exist.`,
+      );
+    }
+
+    // add event handler
+    inputEl.addEventListener("keyup", (event) => {
+      self.handleTyping.bind(self)(event);
+    });
   }
 
   handleTyping(inputEvent) {
@@ -78,13 +77,13 @@ class TypingDelayer {
       // get the value of that element, supposedly an input
       const inputEl = document.querySelector(this.inputSelector);
       const inputValue = inputEl.value;
-  
+
       // if the number of chars are less than minimum number of chars,
       // do not execute code/callback
       if (inputValue.length < this.minChars) {
         return;
       }
-  
+
       const moreInfo = {
         // the keyboard event object that was triggered by the user
         event: inputEvent,
@@ -102,10 +101,10 @@ class TypingDelayer {
       // the class instance.
       // this is not an extra feature, instead it's a mechanism
       // to make what's expected, work as expected
-      const onTypingStopped = this.onTypingStopped.bind(this.callerContext)
-  
-      onTypingStopped(inputValue, moreInfo)
-    }
+      const onTypingStopped = this.onTypingStopped.bind(this.callerContext);
+
+      onTypingStopped(inputValue, moreInfo);
+    };
   }
 
   clearTimeout() {
